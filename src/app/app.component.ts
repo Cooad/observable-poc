@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
+import { merge } from "rxjs";
 import { ObservablesService } from './services/observables.service';
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -11,7 +11,7 @@ export class AppComponent {
   title = 'Observable POC';
 
   constructor(private service: ObservablesService) {}
-  
+
   async demo1() {
     console.log('Firing demo without custom unsubscribe');
     let sub = this.service.getWithoutCustomUnsubscribe().subscribe(x => console.log('oudside 1: ',x));
@@ -47,6 +47,15 @@ export class AppComponent {
     let sub3 = this.service.getWithShare().subscribe(x => console.log('oudside 3: ',x));
     await wait(4000);
     sub3.unsubscribe();
+  }
+
+  async demo4() {
+    console.log('Firing merge test');
+    let sub = merge(
+      this.service.getFromTo(1,5),
+      this.service.getFromTo(6,10)
+      )
+      .subscribe(console.log,null,() => console.log('completes'));
   }
 }
 
